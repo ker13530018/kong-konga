@@ -14,7 +14,7 @@ services:
   kong-migrations:
     command: 'kong migrations bootstrap'
     container_name: 'kong-migrations'
-    image: 'kong:latest'
+    image: kong:1.1-centos-openid
     environment:
       - 'KONG_DATABASE=postgres'
       - 'KONG_PG_HOST=kong-database'
@@ -27,7 +27,7 @@ services:
 
   kong:
     container_name: 'kong'
-    image: 'kong:latest'
+    image: kong:1.1-centos-openid
     environment:
       - 'KONG_DATABASE=postgres'
       - 'KONG_PG_HOST=kong-database'
@@ -37,6 +37,7 @@ services:
       - 'KONG_PROXY_ERROR_LOG=/dev/stderr'
       - 'KONG_ADMIN_ERROR_LOG=/dev/stderr'
       - 'KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl'
+      - 'KONG_PLUGINS=oidc'
     ports:
       - '8000:8000'
       - '8443:8443'
@@ -62,11 +63,11 @@ services:
     depends_on:
       - kong
       - kong-database
-    healthcheck:
-      test: ['CMD', 'curl', '-X', 'GET', 'http://kong:8001']
-      interval: 30s
-      timeout: 1s
-      retries: 1
+        # healthcheck:
+        # test: ['CMD', 'curl', '-X', 'GET', 'http://kong:8001']
+        # interval: 30s
+        # timeout: 1s
+        # retries: 1
     restart: always
 networks:
   default:

@@ -1,0 +1,31 @@
+version: '3'
+networks:
+  default:
+    external:
+      name: 'keycloak_network'
+services:
+  keycloak-db:
+    container_name: keycloak-db
+    image: postgres:9.6
+    volumes:
+      - ./keycloak-datastore:/var/lib/postresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+  keycloak:
+    container_name: keycloak
+    image: jboss/keycloak:4.5.0.Final
+    depends_on:
+      - keycloak-db
+    ports:
+      - '8180:8080'
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloak-db
+      DB_PORT: 5432
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: ${DB_PASSWORD}
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: ${ADMIN_PASSWORD}
